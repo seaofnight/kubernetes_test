@@ -1,0 +1,47 @@
+#cloud-config
+---
+write_files:
+  # Kubeconfig file.
+  - path: /etc/ssh/sshd_config
+    owner: root
+    permissions: 0755
+    content: |
+      PermitRootLogin yes
+
+users:
+  - name: "root"
+    #openssl passwd -l # type passwd 
+    passwd: "$1$ASkgTpo2$BepQwVDH/hlgEw6dfxyVR/"
+
+coreos:
+  update:
+    reboot-strategy: off
+  units:
+    - name: etcd-member.service
+      command: start
+      drop-ins:
+        - name: 10-etcd.conf
+          content: |
+            [Service]
+            Environment="ETCD_OPTS=--name \"etcdserver\" \
+              --listen-client-urls=http://0.0.0.0:2379  \
+              --advertise-client-urls=http://$private_ipv4:2379 \
+              --listen-client-urls=http://0.0.0.0:2379,http://0.0.0.0:4001 \
+              --listen-peer-urls=http://0.0.0.0:2380" 
+            Environment="ETCD_IMAGE_TAG=v3.2.9"
+    - name: coreos-metadata.service
+      command: start
+      content: |
+        [Unit]
+        Description=CoreOS Metadata Agent
+
+        [Service]
+        Type=oneshot
+        Environment=COREOS_METADATA_OPT_PROVIDER=--provider=vagrant-virtualbox
+        ExecStart=/usr/bin/coreos-metadata ${COREOS_METADATA_OPT_PROVIDER} --attributes=/run/metadata/coreos
+
+        [Install]
+        RequiredBy=metadata.target
+    - name: sshd.service
+      command: restart
+
