@@ -1,6 +1,6 @@
 <domain type="kvm" xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0">
   <name>provision</name>
-  <uuid>12fbf010-41d3-4a35-8680-e4b745109d2e</uuid>
+  <uuid>f85366ab-473e-415f-a9b9-267a70950bb2</uuid>
   <memory>2097152</memory>
   <currentMemory>2097152</currentMemory>
   <vcpu>2</vcpu>
@@ -28,7 +28,7 @@
     <emulator>/usr/libexec/qemu-kvm</emulator>
     <disk type="file" device="disk">
       <driver name="qemu" type="qcow2"/>
-      <source file="/root/yjkim/20190626/openvswitch/provision-disk-10G.qcow2"/>
+      <source file="/data/kvm_image/provision-disk-10G.qcow2"/>
       <target dev="vda" bus="virtio"/>
     </disk>
     <controller type="usb" index="0" model="ich9-ehci1"/>
@@ -43,7 +43,7 @@
     </controller>
     <interface type="bridge">
       <source bridge="virbr0"/>
-      <mac address="52:54:00:fe:b3:c0"/>
+      <mac address="00:00:00:00:00:02"/>
       <model type="virtio"/>
     </interface>
     <graphics type="vnc" port="-1"/>
@@ -54,7 +54,7 @@
   </devices>
 <qemu:commandline>
   <qemu:arg value='-fw_cfg'/>
-  <qemu:arg value='name=opt/com.coreos/config,file=/root/yjkim/20190626/openvswitch/provision.ign'/>
+  <qemu:arg value='name=opt/com.coreos/config,file=/root/yjkim/github/kubernetes_test/04.doing/07.coreos_provision/profile/provision//provision.ign'/>
 </qemu:commandline>
 </domain>
 

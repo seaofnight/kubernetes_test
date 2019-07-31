@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -eouv pipefail
+
+virsh destroy $1 && virsh undefine $1
+
+exit 0
+

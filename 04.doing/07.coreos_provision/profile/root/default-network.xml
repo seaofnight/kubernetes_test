@@ -1,0 +1,20 @@
+<network>
+  <name>default</name>
+  <forward mode='nat'/>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <mac address='52:54:00:0a:cd:21'/>
+  <ip address='192.168.122.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.122.2' end='192.168.122.254'/>
+      <host mac='00:00:00:00:00:02' name='provision' ip='192.168.122.2'/>
+      <host mac='00:00:00:00:00:03' name='master1' ip='192.168.122.3'/>
+      <host mac='00:00:00:00:00:04' name='master2' ip='192.168.122.4'/>
+      <host mac='00:00:00:00:00:05' name='master3' ip='192.168.122.5'/>
+      <host mac='00:00:00:00:00:10' name='master-lb' ip='192.168.122.10'/>
+      <host mac='00:00:00:00:00:20' name='worker-lb' ip='192.168.122.20'/>
+      <host mac='00:00:00:00:00:21' name='worker2' ip='192.168.122.21'/>
+      <host mac='00:00:00:00:00:22' name='worker3' ip='192.168.122.22'/>
+      <host mac='00:00:00:00:00:23' name='worker4' ip='192.168.122.23'/>
+    </dhcp>
+  </ip>
+</network>

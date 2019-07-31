@@ -1,0 +1,42 @@
+#!/usr/bin/env bash 
+set -eouv pipefail
+
+function remove_old_file() {
+	rm -rf $KVM_PATH/$NODE_NAME-disk-$DISK_SIZE.$DISK_FORMAT  $OUTPUT
+}
+
+function create_vm_disk() {
+	qemu-img create -f $DISK_FORMAT -b $ISO_PATH $KVM_PATH/$NODE_NAME-disk-$DISK_SIZE.$DISK_FORMAT  $DISK_SIZE
+}
+
+function create_vm_machine() {
+
+	virt-install \
+	    --connect qemu:///system \
+	    --import \
+	    --name $NODE_NAME \
+	    --ram $VRAM \
+	    --vcpus $VCPU \
+	    --os-type=$OSTYPE \
+	    --os-variant=$OSVARIANT \
+	    --disk $DISK \
+	    --network $NETWORK \
+	    --vnc --noautoconsole \
+	    --print-xml > $OUTPUT
+
+	
+	sed -i 's|type="kvm"|type="kvm" xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0"|' "${OUTPUT}"
+	sed -i "/<\/devices>/a <qemu:commandline>\n  <qemu:arg value='-fw_cfg'/>\n  <qemu:arg value='name=opt/com.coreos/config,file=$IGNITION'/>\n</qemu:commandline>" "${OUTPUT}"
+
+	
+	virsh define $OUTPUT && virsh start $NODE_NAME
+}
+
+source .source
+source $PROFILE_PATH/vminfo
+
+remove_old_file
+create_vm_disk
+create_vm_machine
+
+exit 0
