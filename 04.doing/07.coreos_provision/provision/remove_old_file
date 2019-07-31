@@ -1,0 +1,3 @@
+#!/bin/bash 
+
+rm -rf provision-disk-10G.qcow2  provision.xml provision.xmle

@@ -1,0 +1,10 @@
+#!/bin/bash 
+
+cat <<EOF> ./ovs-br-network.xml
+<network>
+<name>ovs-network</name>
+<forward mode='bridge'/>
+<bridge name='br0'/>
+<virtualport type='openvswitch'/>
+</network>
+EOF

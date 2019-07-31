@@ -1,0 +1,13 @@
+#!/bin/bash
+set -uv
+
+qemu-system-x86_64 \
+-accel kvm \
+-name fcos \
+-m 2048 \
+-cpu host \
+-smp 2 \
+-netdev user,id=eth0,hostname=coreos \
+-device virtio-net-pci,netdev=eth0 \
+-drive path=/root/yjkim/20190626/openvswitch/provision-disk-10G.qcow2,format=qcow2,bus=virtio \
+-cdrom /root/yjkim/20190626/openvswitch/coreos_production_qemu_image.img
