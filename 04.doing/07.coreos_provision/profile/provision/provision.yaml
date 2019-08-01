@@ -1,0 +1,32 @@
+#cloud-config
+---
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCx7Yzec0R0mFIfERUdthHiOCi6M0Z8KWH1r8K4Mn8w/i7yWqoNn75T2JRNZie9vBkNZoQvvs+tIfA/vsoBHZbVCJSMJxykpIxMUtfoPrQga3gYKROzq1xVpEIAbeY6gbQZvAUqwQ6tBhNBESGNKm2iFzHC7P/ftH9thSuVxRuh3lEaH5eOP3/TfnQTbsQlE33z0v+NZXZnhkbBQaBOj5K4F/DqY/JxNFNl4bPElm0Jm/sHUwle91wVuvwSoCL1lCOoCVQaCbioaRUYYCAukn6lHYgkbPBzTfAtIBtQvps/dTl+Qc840J5PTiySdX7TnLjGZRqvmGfRiJg4ZL6+Usvf root@di7-03
+
+systemd:
+  units:
+    - name: "coreos-metadata.service"
+      dropins:
+       - name: "use-script.conf"
+         contents: |
+          [Service]
+          # Empty ExecStart= prevents the previously defined ExecStart from running
+          ExecStart=
+          ExecStart=/opt/get-metadata.sh
+    - name: "etcd-member.service"
+      dropins:
+       - name: "10-provision.conf"
+         contents: |
+          EnvironmentFile=/run/metadata/coreos
+          Environment="ETCD_IMAGE_TAG=v3.0.15"
+          ExecStart=
+          ExecStart=/usr/lib/coreos/etcd-wrapper $ETCD_OPTS \
+            --name="${COREOS_EC2_HOSTNAME}" \
+            --listen-peer-urls="http://${COREOS_EC2_IPV4_LOCAL}:2380" \
+            --listen-client-urls="http://0.0.0.0:2379" \
+            --initial-advertise-peer-urls="http://${COREOS_EC2_IPV4_LOCAL}:2380" \
+            --initial-cluster="${COREOS_EC2_HOSTNAME}=http://${COREOS_EC2_IPV4_LOCAL}:2380" \
+            --advertise-client-urls="http://${COREOS_EC2_IPV4_LOCAL}:2379"
