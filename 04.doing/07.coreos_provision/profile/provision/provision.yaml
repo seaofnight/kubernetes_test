@@ -20,13 +20,11 @@ systemd:
       dropins:
        - name: "10-provision.conf"
          contents: |
-          EnvironmentFile=/run/metadata/coreos
-          Environment="ETCD_IMAGE_TAG=v3.0.15"
-          ExecStart=
-          ExecStart=/usr/lib/coreos/etcd-wrapper $ETCD_OPTS \
-            --name="${COREOS_EC2_HOSTNAME}" \
-            --listen-peer-urls="http://${COREOS_EC2_IPV4_LOCAL}:2380" \
-            --listen-client-urls="http://0.0.0.0:2379" \
-            --initial-advertise-peer-urls="http://${COREOS_EC2_IPV4_LOCAL}:2380" \
-            --initial-cluster="${COREOS_EC2_HOSTNAME}=http://${COREOS_EC2_IPV4_LOCAL}:2380" \
-            --advertise-client-urls="http://${COREOS_EC2_IPV4_LOCAL}:2379"
+          [Unit]
+          Description=EC2 metadata agent
+
+          [Service]
+          Type=oneshot
+          Environment=OUTPUT=/run/metadata/coreos
+          ExecStart=/usr/bin/mkdir --parent /run/metadata
+          ExecStart=/usr/bin/bash -c 'echo "CUSTOM_IPV4_PRIVATE=192.168.122.2\nCUSTOM_IPV4_PUBLIC=192.168.122.2" > ${OUTPUT}'
