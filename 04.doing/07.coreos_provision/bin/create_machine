@@ -1,5 +1,5 @@
 #!/usr/bin/env bash 
-set -eouv pipefail
+set -eou pipefail
 
 function remove_old_file() {
 	rm -rf $KVM_PATH/$NODE_NAME-disk-$DISK_SIZE.$DISK_FORMAT  $OUTPUT

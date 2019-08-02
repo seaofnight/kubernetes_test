@@ -1,0 +1,32 @@
+#!/usr/bin/env bash 
+# execute on workspace root path 
+set -eou pipefail
+
+UP_PATH=/home/core
+UP_HOST=core@192.168.122.2
+TO_PATH=/var/lib
+
+function download_coreos_iso() {
+
+  ./bin/get-coreos stable current ./matchbox/assets
+
+}
+
+function deploy_matchbox() {
+
+  scp -r matchbox $UP_HOST:~/
+  ssh $UP_HOST sudo mv /home/core/matchbox $TO_PATH
+
+}
+
+function deploy_dnsmasq() {
+
+  scp -r dnsmasq $UP_HOST:~/
+  ssh $UP_HOST sudo rm -rf /var/lib/dnsmasq
+  ssh $UP_HOST sudo mv /home/core/dnsmasq $TO_PATH
+
+}
+
+#download_coreos_iso
+deploy_matchbox
+deploy_dnsmasq

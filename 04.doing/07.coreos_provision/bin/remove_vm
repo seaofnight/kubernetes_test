@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eouv pipefail
+set -eou pipefail
 
 virsh destroy $1 && virsh undefine $1
 

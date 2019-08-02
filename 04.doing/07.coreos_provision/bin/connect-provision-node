@@ -1,0 +1,4 @@
+#!/usr/bin/env bash 
+#set -eouv pipefail
+
+ssh core@192.168.122.2

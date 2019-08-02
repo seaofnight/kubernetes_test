@@ -1,0 +1,14 @@
+{
+  "id": "etcd1",
+  "name": "etcd Node 1",
+  "profile": "etcd1",
+  "selector": {
+    "mac": "00:00:00:00:00:03"
+  },
+  "metadata": {
+    "domain_name": "etcd1.ntelscluster.com",
+    "etcd_name": "etcd1",
+    "etcd_initial_cluster": "etcd1=http://etcd1.ntelscluster.com:2380,etcd2=http://etcd2.ntelscluster.com:2380,etcd3=http://etcd3.ntelscluster.com:2380"
+  }
+}
+

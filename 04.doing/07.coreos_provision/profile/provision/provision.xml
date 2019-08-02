@@ -1,6 +1,6 @@
 <domain type="kvm" xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0">
   <name>provision</name>
-  <uuid>f85366ab-473e-415f-a9b9-267a70950bb2</uuid>
+  <uuid>de413817-3b46-47a6-b848-363b7944d394</uuid>
   <memory>2097152</memory>
   <currentMemory>2097152</currentMemory>
   <vcpu>2</vcpu>

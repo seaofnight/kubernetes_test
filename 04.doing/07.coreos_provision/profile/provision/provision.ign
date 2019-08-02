@@ -18,26 +18,41 @@
       }
     ]
   },
-  "storage": {},
+  "storage": {
+    "files": [
+      {
+        "filesystem": "root",
+        "path": "/etc/hosts",
+        "append": true,
+        "contents": {
+          "source": "data:,192.168.122.2%20matchbox.ntelscluster.com%0A192.168.122.3%20etcd1.ntelscluster.com%0A192.168.122.4%20etcd2.ntelscluster.com%0A192.168.122.5%20etcd3.ntelscluster.com%0A",
+          "verification": {}
+        },
+        "mode": 420
+      }
+    ]
+  },
   "systemd": {
     "units": [
       {
-        "dropins": [
-          {
-            "contents": "[Service]\n# Empty ExecStart= prevents the previously defined ExecStart from running\nExecStart=\nExecStart=/opt/get-metadata.sh\n",
-            "name": "use-script.conf"
-          }
-        ],
-        "name": "coreos-metadata.service"
+        "contents": "[Unit]\nDescription=user define working e.g ssh \n\n[Service]\nType=oneshot\nExecStart=echo \"hello world\"\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": false,
+        "name": "pre.service"
       },
       {
-        "dropins": [
-          {
-            "contents": "EnvironmentFile=/run/metadata/coreos\nEnvironment=\"ETCD_IMAGE_TAG=v3.0.15\"\nExecStart=\nExecStart=/usr/lib/coreos/etcd-wrapper $ETCD_OPTS \\\n  --name=\"${COREOS_EC2_HOSTNAME}\" \\\n  --listen-peer-urls=\"http://${COREOS_EC2_IPV4_LOCAL}:2380\" \\\n  --listen-client-urls=\"http://0.0.0.0:2379\" \\\n  --initial-advertise-peer-urls=\"http://${COREOS_EC2_IPV4_LOCAL}:2380\" \\\n  --initial-cluster=\"${COREOS_EC2_HOSTNAME}=http://${COREOS_EC2_IPV4_LOCAL}:2380\" \\\n  --advertise-client-urls=\"http://${COREOS_EC2_IPV4_LOCAL}:2379\"\n",
-            "name": "10-provision.conf"
-          }
-        ],
-        "name": "etcd-member.service"
+        "contents": "[Unit]\nDescription=etcd for provision\n\n[Service]\nEnvironment=REGISTRY=quay.io/coreos/etcd\nEnvironment=DATA_DIR=/var/lib/etcd\nEnvironment=NODE=192.168.122.2\nExecStart=docker run --rm \\\n  -p 2379:2379 \\\n  -p 2380:2380 \\\n  --volume=${DATA_DIR}:/etcd-data \\\n  --name etcd ${REGISTRY}:latest \\\n  /usr/local/bin/etcd \\\n  --data-dir=/etcd-data --name provision \\\n  --initial-advertise-peer-urls http://${NODE}:2380 \\\n  --listen-peer-urls http://0.0.0.0:2380 \\\n  --advertise-client-urls http://${NODE}:2379 \\\n  --listen-client-urls http://0.0.0.0:2379 \\\n  --initial-cluster provision=http://${NODE}:2380 \n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "etcd.service"
+      },
+      {
+        "contents": "[Unit]\nDescription=dnsmasq\n\n[Service]\nEnvironment=NAME=dnsmasq\nEnvironment=IMAGE=quay.io/poseidon/dnsmasq:f4623c508ff3fbc467285de1ede61126624b91ac\nEnvironment=DOCKER_OPT=\"--name dnsmasq --rm \"\nEnvironment=DOCKER_NET_OPT=\"--cap-add=NET_ADMIN --net=host\"\nEnvironment=DOCKER_VOL_OPT=\"-v /var/lib/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf:Z\"\nEnvironment=DNSMASQ_OPT=-d\n\nExecStart=docker run $DOCKER_OPT $DOCKER_NET_OPT $DOCKER_VOL_OPT $IMAGE $DNSMASQ_OPT\nExecStop=docker stop $NAME\n",
+        "enabled": false,
+        "name": "dnsmasq.service"
+      },
+      {
+        "contents": "[Unit]\nDescription=matchbox\n\n[Service]\nEnvironment=NAME=matchbox\nEnvironment=DOCKER_OPT=\"--name matchbox --rm quay.io/poseidon/matchbox:latest\"\nEnvironment=DOCKER_NET_OPT=\"-p 8080:8080 -p 8081:8081\"\nEnvironment=DOCKER_VOL_OPT1=\"-v /var/lib/matchbox/etc/matchbox:/etc/matchbox:Z -v /var/lib/matchbox/assets:/var/lib/matchbox/assets:Z\"\n#profile folder : /var/lib/matchbox/groups/etcd\nEnvironment=DOCKER_VOL_OPT2=\"-v /var/lib/matchbox:/var/lib/matchbox:Z -v /var/lib/matchbox/groups/etcd:/var/lib/matchbox/groups:Z\"\nEnvironment=MATCHBOX_ARGS=\"-address=0.0.0.0:8080  -log-level=info\"\n\nExecStart=docker run $DOCKER_NET_OPT $DOCKER_VOL_OPT1 $DOCKER_VOL_OPT2 $DOCKER_OPT $MATCHBOX_ARGS\nExecStop=docker stop matchbox\n",
+        "enabled": false,
+        "name": "matchbox.service"
       }
     ]
   }

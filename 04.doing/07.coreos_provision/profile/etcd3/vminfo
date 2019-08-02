@@ -1,0 +1,23 @@
+
+# image version info
+CHANNEL=stable
+VERSION=current
+
+# vm info
+NODE_NAME=etcd3
+VRAM=2048
+VCPU=2
+DISK_SIZE=10G
+DISK_FORMAT=qcow2
+OSTYPE=linux
+OSVARIANT=virtio26
+NETWORK="bridge=virbr0,mac=00:00:00:00:00:03"
+
+# dir 
+KVM_PATH=/data/kvm_image
+ISO_PATH=$WORKSPACE/image/$CHANNEL/$VERSION/coreos_production_qemu_image.img
+DISK_PATH=$KVM_PATH/$NODE_NAME-disk-$DISK_SIZE.$DISK_FORMAT
+DISK="path=$DISK_PATH,format=$DISK_FORMAT,bus=virtio"
+OUTPUT=$PROFILE_PATH/$NODE_NAME.xml
+IGNITION=$IGNITION_PATH/$NODE_NAME.ign
+

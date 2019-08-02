@@ -1,6 +1,0 @@
-#!/bin/bash
-set -uv
-
-source ./source
-
-qemu-img create -f $DISK_FORMAT -b $CDROM  $NODE_NAME-disk-$DISK_SIZE.$DISK_FORMAT  $DISK_SIZE
